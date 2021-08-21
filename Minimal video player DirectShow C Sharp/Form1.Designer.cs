@@ -29,13 +29,39 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.panelVideoOutput = new System.Windows.Forms.Panel();
+            this.SuspendLayout();
+            // 
+            // panelVideoOutput
+            // 
+            this.panelVideoOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelVideoOutput.BackColor = System.Drawing.Color.Black;
+            this.panelVideoOutput.Location = new System.Drawing.Point(0, 0);
+            this.panelVideoOutput.Name = "panelVideoOutput";
+            this.panelVideoOutput.Size = new System.Drawing.Size(342, 188);
+            this.panelVideoOutput.TabIndex = 0;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(342, 188);
+            this.Controls.Add(this.panelVideoOutput);
+            this.MinimumSize = new System.Drawing.Size(300, 200);
+            this.Name = "Form1";
+            this.Text = "Minimal video player DirectShow";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel panelVideoOutput;
     }
 }
 
