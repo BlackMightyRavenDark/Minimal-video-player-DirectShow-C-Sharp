@@ -49,11 +49,13 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(342, 188);
             this.Controls.Add(this.panelVideoOutput);
+            this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(300, 200);
             this.Name = "Form1";
             this.Text = "Minimal video player DirectShow";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.ResumeLayout(false);
 
