@@ -25,6 +25,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_FILE_NAME_NOT_DEFINED = -100;
         public const int ERROR_FILE_NOT_FOUND = -101;
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
+        public const int ERROR_NOTHING_RENDERED = -103;
 
         public string FileName { get; set; }
         public Control VideoOutputWindow { get; set; }
@@ -80,76 +81,40 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             FindPin(fileSourceFilter, 0, PinDirection.Output, out IPin pinOut);
             FindPin(mediaSplitter, 0, PinDirection.Input, out IPin pinIn);
             errorCode = graphBuilder.Connect(pinOut, pinIn);
+            Marshal.ReleaseComObject(pinIn);
+            Marshal.ReleaseComObject(pinOut);
             if (errorCode != S_OK)
             {
                 Clear();
                 return errorCode;
             }
 
-            CreateDirectShowFilter(CLSID_LAV_VideoDecoder, out videoDecoder);
-            graphBuilder.AddFilter(videoDecoder, "Video decoder");
-            FindPin(mediaSplitter, "ideo", PinDirection.Output, out pinOut);
-            FindPin(videoDecoder, 0, PinDirection.Input, out pinIn);
-            int errorCodeVideo = graphBuilder.Connect(pinOut, pinIn);
-            if (errorCodeVideo != S_OK)
+            int errorCodeVideo = S_FALSE;
+            if (FindPin(mediaSplitter, "ideo", PinDirection.Output, out pinOut) == S_OK)
             {
-                Clear();
-                return errorCodeVideo;
+                errorCodeVideo = RenderVideoStream_Manual(pinOut);
+                Marshal.ReleaseComObject(pinOut);
+                if (errorCodeVideo != S_OK)
+                {
+                    ClearVideoChain();
+                }
             }
 
-            CreateDirectShowFilter(CLSID_VideoRenderer, out videoRenderer);
-            graphBuilder.AddFilter(videoRenderer, "Video renderer");
-            FindPin(videoDecoder, 0, PinDirection.Output, out pinOut);
-            FindPin(videoRenderer, 0, PinDirection.Input, out pinIn);
-            errorCodeVideo = graphBuilder.Connect(pinOut, pinIn);
-            if (errorCodeVideo != S_OK)
+            int errorCodeAudio = S_FALSE;
+            if (FindPin(mediaSplitter, "udio", PinDirection.Output, out pinOut) == S_OK)
             {
-                Clear();
-                return errorCodeVideo;
+                errorCodeAudio = RenderAudioStream_Manual(pinOut);
+                Marshal.ReleaseComObject(pinOut);
+                if (errorCodeAudio != S_OK)
+                {
+                    ClearAudioChain();
+                }
             }
 
-            if (CreateDirectShowFilter(CLSID_DirectSoundAudioRenderer, out audioRenderer) == S_OK)
+            if (errorCodeVideo != S_OK && errorCodeAudio != S_OK)
             {
-                graphBuilder.AddFilter(audioRenderer, "Audio renderer");
-
-                int errorCodeAudio = CreateDirectShowFilter(CLSID_LAV_AudioDecoder, out audioDecoder);
-                if (errorCodeAudio == S_OK)
-                {
-                    graphBuilder.AddFilter(audioDecoder, "Audio decoder");
-                    FindPin(mediaSplitter, "udio", PinDirection.Output, out pinOut);
-                    FindPin(audioDecoder, 0, PinDirection.Input, out pinIn);
-                    errorCodeAudio = graphBuilder.Connect(pinOut, pinIn);
-                    if (errorCodeAudio == S_OK)
-                    {
-                        FindPin(audioDecoder, 0, PinDirection.Output, out pinOut);
-                        FindPin(audioRenderer, 0, PinDirection.Input, out pinIn);
-                        errorCodeAudio = graphBuilder.Connect(pinOut, pinIn);
-                        if (errorCodeAudio != S_OK)
-                        {
-                            graphBuilder.RemoveFilter(audioRenderer);
-                            graphBuilder.RemoveFilter(audioDecoder);
-                            Marshal.ReleaseComObject(audioRenderer);
-                            Marshal.ReleaseComObject(audioDecoder);
-                            audioRenderer = null;
-                            audioDecoder = null;
-                        }
-                    }
-                    else
-                    {
-                        graphBuilder.RemoveFilter(audioRenderer);
-                        graphBuilder.RemoveFilter(audioDecoder);
-                        Marshal.ReleaseComObject(audioRenderer);
-                        Marshal.ReleaseComObject(audioDecoder);
-                        audioRenderer = null;
-                        audioDecoder = null;
-                    }
-                }
-                else
-                {
-                    graphBuilder.RemoveFilter(audioRenderer);
-                    Marshal.ReleaseComObject(audioRenderer);
-                    audioRenderer = null;
-                }
+                Clear();
+                return ERROR_NOTHING_RENDERED;
             }
 
             videoWindow = (IVideoWindow)graphBuilder;
@@ -168,26 +133,113 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         }
 
+        private int RenderVideoStream_Manual(IPin splitterPinOut)
+        {
+            CreateDirectShowFilter(CLSID_LAV_VideoDecoder, out videoDecoder);
+            graphBuilder.AddFilter(videoDecoder, "Video decoder");
+            if (FindPin(videoDecoder, 0, PinDirection.Input, out IPin pinIn) != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoDecoder);
+                return E_POINTER;
+            }
+            int errorCode = graphBuilder.Connect(splitterPinOut, pinIn);
+            Marshal.ReleaseComObject(pinIn);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoDecoder);
+                return errorCode;
+            }
+
+            CreateDirectShowFilter(CLSID_VideoRenderer, out videoRenderer);
+            graphBuilder.AddFilter(videoRenderer, "Video renderer");
+            if (FindPin(videoDecoder, 0, PinDirection.Output, out IPin pinOut) != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoRenderer);
+                graphBuilder.RemoveFilter(videoDecoder);
+                return E_POINTER;
+            }
+            if (FindPin(videoRenderer, 0, PinDirection.Input, out pinIn) != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoRenderer);
+                graphBuilder.RemoveFilter(videoDecoder);
+                Marshal.ReleaseComObject(pinOut);
+                return E_POINTER;
+            }
+            errorCode = graphBuilder.Connect(pinOut, pinIn);
+            Marshal.ReleaseComObject(pinIn);
+            Marshal.ReleaseComObject(pinOut);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(videoDecoder);
+            }
+
+            return errorCode;
+        }
+
+        private int RenderAudioStream_Manual(IPin splitterPinOut)
+        {
+            int errorCode = CreateDirectShowFilter(CLSID_DirectSoundAudioRenderer, out audioRenderer);
+            if (errorCode != S_OK)
+            {
+                return errorCode;
+            }
+            graphBuilder.AddFilter(audioRenderer, "Audio renderer");
+
+            errorCode = CreateDirectShowFilter(CLSID_LAV_AudioDecoder, out audioDecoder);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                return errorCode;
+            }
+            graphBuilder.AddFilter(audioDecoder, "Audio decoder");
+
+            if (FindPin(audioDecoder, 0, PinDirection.Input, out IPin pinIn) != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(audioDecoder);
+                return E_POINTER;
+            }
+            errorCode = graphBuilder.Connect(splitterPinOut, pinIn);
+            Marshal.ReleaseComObject(pinIn);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(audioDecoder);
+                return errorCode;
+            }
+
+            if (FindPin(audioDecoder, 0, PinDirection.Output, out IPin pinOut) != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(audioDecoder);
+                return E_POINTER;
+            }
+            if (FindPin(audioRenderer, 0, PinDirection.Input, out pinIn) != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(audioDecoder);
+                Marshal.ReleaseComObject(pinOut);
+                return E_POINTER;
+            }
+            errorCode = graphBuilder.Connect(pinOut, pinIn);
+            Marshal.ReleaseComObject(pinIn);
+            Marshal.ReleaseComObject(pinOut);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioRenderer);
+                graphBuilder.RemoveFilter(audioDecoder);
+            }
+            return errorCode;
+        }
+
         public void SetVideoOutputRectangle(Rectangle rectangle)
         {
             videoWindow.SetWindowPosition(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
-        public void Clear()
+        private void ClearVideoChain()
         {
-            if (mediaControl != null)
-            {
-                mediaControl.Stop();
-                Marshal.ReleaseComObject(mediaControl);
-                mediaControl = null;
-            }
-
-            if (mediaPosition != null)
-            {
-                Marshal.ReleaseComObject(mediaPosition);
-                mediaPosition = null;
-            }
-
             if (videoWindow != null)
             {
                 Marshal.ReleaseComObject(videoWindow);
@@ -205,7 +257,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(videoDecoder);
                 videoDecoder = null;
             }
+        }
 
+        private void ClearAudioChain()
+        {
             if (audioDecoder != null)
             {
                 Marshal.ReleaseComObject(audioDecoder);
@@ -217,6 +272,26 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(audioRenderer);
                 audioRenderer = null;
             }
+        }
+
+        public void Clear()
+        {
+            if (mediaControl != null)
+            {
+                mediaControl.Stop();
+                Marshal.ReleaseComObject(mediaControl);
+                mediaControl = null;
+            }
+
+            if (mediaPosition != null)
+            {
+                Marshal.ReleaseComObject(mediaPosition);
+                mediaPosition = null;
+            }
+
+
+            ClearVideoChain();
+            ClearAudioChain();
 
             if (mediaSplitter != null)
             {
