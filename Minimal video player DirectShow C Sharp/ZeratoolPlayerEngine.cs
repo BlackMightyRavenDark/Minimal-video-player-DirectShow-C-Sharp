@@ -78,8 +78,17 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
             CreateDirectShowFilter(CLSID_LAV_Splitter, out mediaSplitter);
             graphBuilder.AddFilter(mediaSplitter, "Media splitter");
-            FindPin(fileSourceFilter, 0, PinDirection.Output, out IPin pinOut);
-            FindPin(mediaSplitter, 0, PinDirection.Input, out IPin pinIn);
+            if (FindPin(fileSourceFilter, 0, PinDirection.Output, out IPin pinOut) != S_OK)
+            {
+                Clear();
+                return E_POINTER;
+            }
+            if (FindPin(mediaSplitter, 0, PinDirection.Input, out IPin pinIn) != S_OK)
+            {
+                Marshal.ReleaseComObject(pinOut);
+                Clear();
+                return E_POINTER;
+            }
             errorCode = graphBuilder.Connect(pinOut, pinIn);
             Marshal.ReleaseComObject(pinIn);
             Marshal.ReleaseComObject(pinOut);
