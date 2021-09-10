@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using static Minimal_video_player_DirectShow_C_Sharp.ZeratoolPlayerEngine;
 using static Minimal_video_player_DirectShow_C_Sharp.DirectShowUtils;
+using System.Drawing;
 
 namespace Minimal_video_player_DirectShow_C_Sharp
 {
@@ -33,7 +34,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            player.SetVideoOutputRectangle(panelVideoOutput.ClientRectangle);
+            if (player.VideoRendered)
+            {
+                Size videoSize = player.VideoSize;
+                if (videoSize.Width > 0 && videoSize.Height > 0)
+                {
+                    Rectangle videoRect = new Rectangle(0, 0, videoSize.Width, videoSize.Height);
+                    Rectangle r = videoRect.ResizeTo(panelVideoOutput.ClientSize).CenterIn(panelVideoOutput.ClientRectangle);
+                    player.SetVideoOutputRectangle(r);
+                }
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)

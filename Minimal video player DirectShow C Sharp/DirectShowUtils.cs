@@ -97,5 +97,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        public static bool GetComInterface<T>(IGraphBuilder graphBuilder, out T obj)
+        {
+            obj = (T)graphBuilder;
+            return obj != null;
+        }
     }
 }

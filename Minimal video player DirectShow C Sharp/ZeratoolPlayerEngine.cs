@@ -11,6 +11,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
     {
         private IGraphBuilder graphBuilder = null;
         private IVideoWindow videoWindow = null;
+        private IBasicVideo basicVideo = null;
         private IMediaControl mediaControl = null;
         private IMediaPosition mediaPosition = null;
 
@@ -27,8 +28,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
         public const int ERROR_NOTHING_RENDERED = -103;
 
+        private int _videoWidth;
+        private int _videoHeight;
+
         public string FileName { get; set; }
         public Control VideoOutputWindow { get; set; }
+        public Size VideoSize { get { return new Size(_videoWidth, _videoHeight); } }
         public double Position
         {
             get
@@ -48,6 +53,9 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 }
             }
         }
+
+        public bool VideoRendered => basicVideo != null;
+        
 
         public int BuildGraph()
         {
@@ -130,8 +138,25 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             videoWindow.put_Owner(VideoOutputWindow.Handle);
             videoWindow.put_MessageDrain(VideoOutputWindow.Handle);
             videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
-            SetVideoOutputRectangle(VideoOutputWindow.ClientRectangle);
-            videoWindow.put_Visible(OABool.True);
+
+            if (!GetComInterface<IBasicVideo>(graphBuilder, out basicVideo))
+            {
+                Clear();
+                return E_POINTER;
+            }
+
+            errorCode = basicVideo.GetVideoSize(out _videoWidth, out _videoHeight);
+            if (errorCode == S_OK)
+            {
+                Rectangle videoRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+                videoRect = videoRect.ResizeTo(VideoOutputWindow.ClientSize).CenterIn(VideoOutputWindow.ClientRectangle);
+                SetVideoOutputRectangle(videoRect);
+                videoWindow.put_Visible(OABool.True);
+            }
+            else
+            {
+                ClearVideoChain();
+            }
 
             mediaPosition = (IMediaPosition)graphBuilder;
 
@@ -266,6 +291,15 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(videoDecoder);
                 videoDecoder = null;
             }
+
+            if (basicVideo != null)
+            {
+                Marshal.ReleaseComObject(basicVideo);
+                basicVideo = null;
+            }
+
+            _videoWidth = 0;
+            _videoHeight = 0;
         }
 
         private void ClearAudioChain()
