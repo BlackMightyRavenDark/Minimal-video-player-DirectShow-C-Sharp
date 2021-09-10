@@ -197,7 +197,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 return errorCode;
             }
 
-            CreateDirectShowFilter(CLSID_VideoRenderer, out videoRenderer);
+            CreateDirectShowFilter(CLSID_VideoMixingRenderer9, out videoRenderer);
             graphBuilder.AddFilter(videoRenderer, "Video renderer");
             if (FindPin(videoDecoder, 0, PinDirection.Output, out IPin pinOut) != S_OK)
             {

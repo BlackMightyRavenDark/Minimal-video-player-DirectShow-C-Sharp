@@ -13,7 +13,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public static readonly Guid CLSID_FileSourceAsync = new Guid("{E436EBB5-524F-11CE-9F53-0020AF0BA770}");
         public static readonly Guid CLSID_LAV_Splitter = new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}");
         public static readonly Guid CLSID_LAV_VideoDecoder = new Guid("{EE30215D-164F-4A92-A4EB-9D4C13390F9F}");
-        public static readonly Guid CLSID_VideoRenderer = new Guid("{70E102B0-5556-11CE-97C0-00AA0055595A}");
+        public static readonly Guid CLSID_VideoMixingRenderer9 = new Guid("{51B4ABF3-748F-4E3B-A276-C828330E926A}");
         public static readonly Guid CLSID_LAV_AudioDecoder = new Guid("{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}");
         public static readonly Guid CLSID_DirectSoundAudioRenderer = new Guid("{79376820-07D0-11CF-A24D-0020AFD79767}");
 

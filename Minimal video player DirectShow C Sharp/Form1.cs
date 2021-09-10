@@ -29,6 +29,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 ShowError(errorCode);
             }
+
+            seekBar.SetDoubleBuffering(true);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

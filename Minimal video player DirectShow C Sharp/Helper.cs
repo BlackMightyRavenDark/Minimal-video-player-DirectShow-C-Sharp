@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace Minimal_video_player_DirectShow_C_Sharp
 {
@@ -28,5 +30,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             return new Rectangle(x, y, source.Width, source.Height);
         }
 
+        public static void SetDoubleBuffering(this Control control, bool enabled)
+        {
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                null, control, new object[] { enabled });
+        }
     }
 }
