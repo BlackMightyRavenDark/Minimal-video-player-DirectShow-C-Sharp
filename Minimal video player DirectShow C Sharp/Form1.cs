@@ -21,7 +21,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             player.VideoOutputWindow = panelVideoOutput;
             player.FileName = @"H:\Downloads\completed\Doctor.Who.s11.720p.WEBRip.BaibaKo\Doctor.Who.s11e00.720p.WEBRip.BaibaKo.mkv";
             int errorCode = player.BuildGraph();
-            if (errorCode != S_OK)
+            if (errorCode == S_OK)
+            {
+                timer1.Enabled = true;
+            }
+            else
             {
                 ShowError(errorCode);
             }
@@ -29,6 +33,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            timer1.Enabled = false;
             player.Clear();
         }
 
@@ -44,6 +49,66 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     player.SetVideoOutputRectangle(r);
                 }
             }
+            seekBar.Refresh();
+        }
+
+        private void seekBar_Paint(object sender, PaintEventArgs e)
+        {
+            Brush brush = new SolidBrush(seekBar.BackColor);
+            e.Graphics.FillRectangle(brush, seekBar.ClientRectangle);
+            brush.Dispose();
+
+            if (player != null && player.Duration > 0.0)
+            {
+
+                int x = (int)(seekBar.Width / player.Duration * player.Position);
+                Rectangle r = new Rectangle(0, 0, x, seekBar.Height);
+                e.Graphics.FillRectangle(Brushes.Blue, r);
+
+                string elapsedString = new DateTime(TimeSpan.FromSeconds(player.Position).Ticks).ToString("H:mm:ss");
+                string remainingString = new DateTime(TimeSpan.FromSeconds(player.Duration - player.Position).Ticks).ToString("H:mm:ss");
+
+                Font fnt = new Font("Tahoma", 11.0f);
+                SizeF size = e.Graphics.MeasureString(elapsedString, fnt);
+
+                Rectangle thumbRect = new Rectangle(x - 3, 0, 6, seekBar.Height);
+                e.Graphics.FillRectangle(Brushes.White, thumbRect);
+                e.Graphics.DrawRectangle(Pens.Black, thumbRect);
+
+                int y = (int)(seekBar.Height / 2 - size.Height / 2);
+                e.Graphics.DrawString(elapsedString, fnt, Brushes.White, x - size.Width - 2, y);
+                e.Graphics.DrawString(remainingString, fnt, Brushes.Black, x + 4, y);
+
+                fnt.Dispose();
+            }
+        }
+
+        private void seekBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && player != null)
+            {
+                player.Position = player.Duration / seekBar.Width * e.X;
+                seekBar.Refresh();
+            }
+        }
+
+        private void seekBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && player != null)
+            {
+                double pos = player.Duration / seekBar.Width * e.X;
+                if (pos >= player.Duration)
+                {
+                    pos = player.Duration - 3.0;
+                }
+                if (pos < 0.0)
+                {
+                    pos = 0.0;
+                }
+
+                player.Position = pos;
+                seekBar.Refresh();
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -56,14 +121,27 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     return;
 
                 case Keys.R:
+                    timer1.Enabled = false;
                     double pos = player.Position;
                     player.Clear();
-                    if (player.BuildGraph() == S_OK && pos > 0.0)
+                    panelVideoOutput.Refresh();
+                    seekBar.Refresh();
+                    if (player.BuildGraph() == S_OK)
                     {
-                        player.Position = pos;
+                        if (pos > 0.0)
+                        {
+                            player.Position = pos;
+                        }
+                        seekBar.Refresh();
+                        timer1.Enabled = true;
                     }
                     break;
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            seekBar.Refresh();
         }
 
         private void ShowError(int errorCode)
@@ -87,5 +165,6 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     break;
             }
         }
+
     }
 }

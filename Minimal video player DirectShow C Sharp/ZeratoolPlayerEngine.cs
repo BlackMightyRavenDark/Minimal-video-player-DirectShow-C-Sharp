@@ -54,6 +54,19 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        public double Duration
+        {
+            get
+            {
+                double dur = 0.0;
+                if (mediaPosition != null)
+                {
+                    mediaPosition.get_Duration(out dur);
+                }
+                return dur;
+            }
+        }
+
         public bool VideoRendered => basicVideo != null;
         
 

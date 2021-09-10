@@ -29,7 +29,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelVideoOutput = new System.Windows.Forms.Panel();
+            this.seekBar = new System.Windows.Forms.Panel();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // panelVideoOutput
@@ -40,14 +43,32 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.panelVideoOutput.BackColor = System.Drawing.Color.Black;
             this.panelVideoOutput.Location = new System.Drawing.Point(0, 0);
             this.panelVideoOutput.Name = "panelVideoOutput";
-            this.panelVideoOutput.Size = new System.Drawing.Size(342, 188);
+            this.panelVideoOutput.Size = new System.Drawing.Size(342, 170);
             this.panelVideoOutput.TabIndex = 0;
+            // 
+            // seekBar
+            // 
+            this.seekBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.seekBar.Location = new System.Drawing.Point(0, 170);
+            this.seekBar.Name = "seekBar";
+            this.seekBar.Size = new System.Drawing.Size(342, 20);
+            this.seekBar.TabIndex = 1;
+            this.seekBar.Paint += new System.Windows.Forms.PaintEventHandler(this.seekBar_Paint);
+            this.seekBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.seekBar_MouseDown);
+            this.seekBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.seekBar_MouseMove);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(342, 188);
+            this.Controls.Add(this.seekBar);
             this.Controls.Add(this.panelVideoOutput);
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(300, 200);
@@ -64,6 +85,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         #endregion
 
         private System.Windows.Forms.Panel panelVideoOutput;
+        private System.Windows.Forms.Panel seekBar;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
