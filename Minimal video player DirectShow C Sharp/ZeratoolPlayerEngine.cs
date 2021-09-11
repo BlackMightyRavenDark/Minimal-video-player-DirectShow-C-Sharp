@@ -179,14 +179,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 return ERROR_NOTHING_RENDERED;
             }
 
-            videoWindow = (IVideoWindow)graphBuilder;
-            videoWindow.put_Owner(VideoOutputWindow.Handle);
-            videoWindow.put_MessageDrain(VideoOutputWindow.Handle);
-            videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
-
-            if (GetComInterface<IBasicVideo>(graphBuilder, out basicVideo) &&
-                basicVideo.GetVideoSize(out _videoWidth, out _videoHeight) == S_OK)
+            if (GetVideoInterfaces() && basicVideo.GetVideoSize(out _videoWidth, out _videoHeight) == S_OK)
             {
+                videoWindow.put_Owner(VideoOutputWindow.Handle);
+                videoWindow.put_MessageDrain(VideoOutputWindow.Handle);
+                videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
+
                 Rectangle videoRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
                 videoRect = videoRect.ResizeTo(VideoOutputWindow.ClientSize).CenterIn(VideoOutputWindow.ClientRectangle);
                 SetVideoOutputRectangle(videoRect);
@@ -219,7 +217,6 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             mediaControl.Run();
 
             return S_OK;
-
         }
 
         private int RenderVideoStream_Manual(IPin splitterPinOut)
@@ -320,6 +317,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 graphBuilder.RemoveFilter(audioDecoder);
             }
             return errorCode;
+        }
+
+        private bool GetVideoInterfaces()
+        {
+            if (!GetComInterface<IVideoWindow>(graphBuilder, out videoWindow) ||
+                !GetComInterface<IBasicVideo>(graphBuilder, out basicVideo))
+            {
+                return false;
+            }
+            return true;
         }
 
         public void SetVideoOutputRectangle(Rectangle rectangle)
