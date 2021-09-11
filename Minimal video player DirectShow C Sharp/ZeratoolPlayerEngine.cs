@@ -184,14 +184,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             videoWindow.put_MessageDrain(VideoOutputWindow.Handle);
             videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
 
-            if (!GetComInterface<IBasicVideo>(graphBuilder, out basicVideo))
-            {
-                Clear();
-                return E_POINTER;
-            }
-
-            errorCode = basicVideo.GetVideoSize(out _videoWidth, out _videoHeight);
-            if (errorCode == S_OK)
+            if (GetComInterface<IBasicVideo>(graphBuilder, out basicVideo) &&
+                basicVideo.GetVideoSize(out _videoWidth, out _videoHeight) == S_OK)
             {
                 Rectangle videoRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
                 videoRect = videoRect.ResizeTo(VideoOutputWindow.ClientSize).CenterIn(VideoOutputWindow.ClientRectangle);
@@ -211,6 +205,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             else
             {
                 ClearAudioChain();
+            }
+
+            if (!VideoRendered && !AudioRendered)
+            {
+                Clear();
+                return ERROR_NOTHING_RENDERED;
             }
 
             mediaPosition = (IMediaPosition)graphBuilder;
