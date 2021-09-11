@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private IGraphBuilder graphBuilder = null;
         private IVideoWindow videoWindow = null;
         private IBasicVideo basicVideo = null;
+        private IBasicAudio basicAudio = null;
         private IMediaControl mediaControl = null;
         private IMediaPosition mediaPosition = null;
 
@@ -30,6 +32,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private int _videoWidth;
         private int _videoHeight;
+        private int _volume = 25;
 
         public string FileName { get; set; }
         public Control VideoOutputWindow { get; set; }
@@ -67,6 +70,35 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        public int Volume
+        {
+            get
+            {
+                return _volume;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    value = 0;
+                }
+                else if (value > 100)
+                {
+                    value = 100;
+                }
+                if (_volume != value)
+                {
+                    _volume = value;
+                    if (basicAudio != null)
+                    {
+                        int db = GetDecibelsVolume(_volume);
+                        basicAudio.put_Volume(db);
+                    }
+                }
+            }
+        }
+
+        public bool AudioRendered => basicAudio != null;
         public bool VideoRendered => basicVideo != null;
         
 
@@ -169,6 +201,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             else
             {
                 ClearVideoChain();
+            }
+
+            if (GetComInterface<IBasicAudio>(graphBuilder, out basicAudio))
+            {
+                int db = GetDecibelsVolume(Volume);
+                basicAudio.put_Volume(db);
+            }
+            else
+            {
+                ClearAudioChain();
             }
 
             mediaPosition = (IMediaPosition)graphBuilder;
@@ -317,6 +359,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private void ClearAudioChain()
         {
+            if (basicAudio != null)
+            {
+                Marshal.ReleaseComObject(basicAudio);
+                basicAudio = null;
+            }
+
             if (audioDecoder != null)
             {
                 Marshal.ReleaseComObject(audioDecoder);
@@ -372,6 +420,21 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(graphBuilder);
                 graphBuilder = null;
             }
+        }
+
+        public static int GetDecibelsVolume(int volume)
+        {
+            long vol = volume * ushort.MaxValue / 100;
+            int db = (int)Math.Truncate(100 * 33.22 * Math.Log((vol + 1e-6) / ushort.MaxValue) / Math.Log(10));
+            if (db < -10000)
+            {
+                db = -10000;
+            }
+            else if (db > 0)
+            {
+                db = 0;
+            }
+            return db;
         }
     }
 }

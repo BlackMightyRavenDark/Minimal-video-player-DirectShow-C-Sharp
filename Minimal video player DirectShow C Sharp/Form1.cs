@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using static Minimal_video_player_DirectShow_C_Sharp.ZeratoolPlayerEngine;
 using static Minimal_video_player_DirectShow_C_Sharp.DirectShowUtils;
-using System.Drawing;
 
 namespace Minimal_video_player_DirectShow_C_Sharp
 {
@@ -30,6 +30,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 ShowError(errorCode);
             }
 
+            volumeBar.SetDoubleBuffering(true);
             seekBar.SetDoubleBuffering(true);
         }
 
@@ -51,6 +52,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     player.SetVideoOutputRectangle(r);
                 }
             }
+
+            volumeBar.Refresh();
             seekBar.Refresh();
         }
 
@@ -113,6 +116,43 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        //MouseDown and MouseMove doing same actions
+        private void volumeBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                player.Volume = (int)(100.0 / volumeBar.Width * e.X);
+                volumeBar.Refresh();
+            }
+        }
+
+        private void volumeBar_Paint(object sender, PaintEventArgs e)
+        {
+            Brush brush = new SolidBrush(volumeBar.BackColor);
+            e.Graphics.FillRectangle(brush, volumeBar.ClientRectangle);
+            brush.Dispose();
+            if (player != null)
+            {
+                if (player.Volume > 0)
+                {
+                    int x1 = (int)(volumeBar.Width / 100.0 * player.Volume);
+                    Rectangle r = new Rectangle(0, 0, x1, volumeBar.Height);
+                    e.Graphics.FillRectangle(player.AudioRendered ? Brushes.Lime : Brushes.LightGray, r);
+                }
+
+                string t = $"Volume: {player.Volume}%";
+
+                Font fnt = new Font("Tahoma", 10.0f);
+                SizeF size = e.Graphics.MeasureString(t, fnt);
+
+                int x = volumeBar.Width / 2 - (int)size.Width / 2;
+                int y = volumeBar.Height / 2 - (int)size.Height / 2;
+                e.Graphics.DrawString(t, fnt, Brushes.Black, x, y);
+
+                fnt.Dispose();
+            }
+        }
+
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -127,6 +167,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     double pos = player.Position;
                     player.Clear();
                     panelVideoOutput.Refresh();
+                    volumeBar.Refresh();
                     seekBar.Refresh();
                     if (player.BuildGraph() == S_OK)
                     {
@@ -134,6 +175,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                         {
                             player.Position = pos;
                         }
+                        volumeBar.Refresh();
                         seekBar.Refresh();
                         timer1.Enabled = true;
                     }
