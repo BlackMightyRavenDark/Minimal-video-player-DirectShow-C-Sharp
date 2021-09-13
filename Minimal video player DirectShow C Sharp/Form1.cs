@@ -183,9 +183,31 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        private void panelVideoOutput_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && player != null)
+            {
+                PlayerPlayPause(player);
+            }
+        }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
             seekBar.Refresh();
+        }
+
+        private void PlayerPlayPause(ZeratoolPlayerEngine playerEngine)
+        {
+            switch (playerEngine.State)
+            {
+                case PlayerState.Paused:
+                    playerEngine.Play();
+                    break;
+
+                case PlayerState.Playing:
+                    playerEngine.Pause();
+                    break;
+            }    
         }
 
         private void ShowError(int errorCode)
@@ -209,6 +231,5 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     break;
             }
         }
-
     }
 }

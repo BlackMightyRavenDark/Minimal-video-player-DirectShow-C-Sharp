@@ -30,9 +30,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
         public const int ERROR_NOTHING_RENDERED = -103;
 
+        public enum PlayerState { Playing, Paused, Null }
+
         private int _videoWidth;
         private int _videoHeight;
         private int _volume = 25;
+        private PlayerState _state = PlayerState.Null;
 
         public string FileName { get; set; }
         public Control VideoOutputWindow { get; set; }
@@ -98,6 +101,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        public PlayerState State => _state;
         public bool AudioRendered => basicAudio != null;
         public bool VideoRendered => basicVideo != null;
         
@@ -216,6 +220,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             mediaControl = (IMediaControl)graphBuilder;
             mediaControl.Run();
 
+            _state = PlayerState.Playing;
+
             return S_OK;
         }
 
@@ -317,6 +323,24 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 graphBuilder.RemoveFilter(audioDecoder);
             }
             return errorCode;
+        }
+
+        public void Play()
+        {
+            if (mediaControl != null)
+            {
+                mediaControl.Run();
+                _state = PlayerState.Playing;
+            }
+        }
+
+        public void Pause()
+        {
+            if (mediaControl != null)
+            {
+                mediaControl.Pause();
+                _state = PlayerState.Paused;
+            }
         }
 
         private bool GetVideoInterfaces()
@@ -427,6 +451,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(graphBuilder);
                 graphBuilder = null;
             }
+
+            _state = PlayerState.Null;
         }
 
         public static int GetDecibelsVolume(int volume)

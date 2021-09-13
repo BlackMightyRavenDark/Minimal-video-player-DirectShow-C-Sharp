@@ -46,6 +46,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.panelVideoOutput.Name = "panelVideoOutput";
             this.panelVideoOutput.Size = new System.Drawing.Size(342, 170);
             this.panelVideoOutput.TabIndex = 0;
+            this.panelVideoOutput.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelVideoOutput_MouseDown);
             // 
             // seekBar
             // 
