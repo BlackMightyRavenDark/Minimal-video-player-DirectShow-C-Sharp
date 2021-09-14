@@ -20,14 +20,14 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             player = new ZeratoolPlayerEngine();
             player.VideoOutputWindow = panelVideoOutput;
             player.FileName = @"H:\Downloads\completed\Doctor.Who.s11.720p.WEBRip.BaibaKo\Doctor.Who.s11e00.720p.WEBRip.BaibaKo.mkv";
-            int errorCode = player.BuildGraph();
+            int errorCode = player.Play();
             if (errorCode == S_OK)
             {
                 timer1.Enabled = true;
             }
             else
             {
-                ShowError(errorCode);
+                ShowErrorMessage(errorCode);
             }
 
             volumeBar.SetDoubleBuffering(true);
@@ -169,7 +169,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     panelVideoOutput.Refresh();
                     volumeBar.Refresh();
                     seekBar.Refresh();
-                    if (player.BuildGraph() == S_OK)
+                    int errorCode = player.Play();
+                    if (errorCode == S_OK)
                     {
                         if (pos > 0.0)
                         {
@@ -178,6 +179,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                         volumeBar.Refresh();
                         seekBar.Refresh();
                         timer1.Enabled = true;
+                    }
+                    else
+                    {
+                        ShowErrorMessage(errorCode);
                     }
                     break;
             }
@@ -220,7 +225,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private void miPlayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            player.Play();
+            int errorCode = player.Play();
+            if (errorCode != S_OK)
+            {
+                ShowErrorMessage(errorCode);
+            }
         }
 
         private void miPauseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -236,7 +245,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             seekBar.Refresh();
         }
 
-        private void ShowError(int errorCode)
+        private void ShowErrorMessage(int errorCode)
         {
             switch (errorCode)
             {
@@ -244,14 +253,22 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     MessageBox.Show("Не указано имя файла!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
+
                 case ERROR_FILE_NOT_FOUND:
                     MessageBox.Show($"Файл не найден!\n{player.FileName}", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
+
                 case ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED:
                     MessageBox.Show("Не указано окно для вывода видео!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
+
+                case ERROR_NOTHING_RENDERED:
+                    MessageBox.Show($"Не удалось отрендерить файл!\n{player.FileName}", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+
                 default:
                     MessageBox.Show(errorCode.ToString(), "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;

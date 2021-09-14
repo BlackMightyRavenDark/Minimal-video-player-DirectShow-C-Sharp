@@ -30,7 +30,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
         public const int ERROR_NOTHING_RENDERED = -103;
 
-        public enum PlayerState { Playing, Paused, Null }
+        public enum PlayerState { Playing, Paused, Stopped, Null }
 
         private int _videoWidth;
         private int _videoHeight;
@@ -106,7 +106,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public bool VideoRendered => basicVideo != null;
         
 
-        public int BuildGraph()
+        private int BuildGraph()
         {
             if (string.IsNullOrEmpty(FileName) || string.IsNullOrWhiteSpace(FileName))
             {
@@ -215,12 +215,15 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 return ERROR_NOTHING_RENDERED;
             }
 
+            if (!GetComInterface<IMediaControl>(graphBuilder, out mediaControl))
+            {
+                Clear();
+                return E_POINTER;
+            }
+
             mediaPosition = (IMediaPosition)graphBuilder;
 
-            mediaControl = (IMediaControl)graphBuilder;
-            mediaControl.Run();
-
-            _state = PlayerState.Playing;
+            _state = PlayerState.Stopped;
 
             return S_OK;
         }
@@ -325,21 +328,37 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             return errorCode;
         }
 
-        public void Play()
+        public int Play()
         {
-            if (mediaControl != null)
+            int res = S_OK;
+            if (State == PlayerState.Null)
+            {
+                res = BuildGraph();
+            }
+            if (State != PlayerState.Null && mediaControl != null)
             {
                 mediaControl.Run();
                 _state = PlayerState.Playing;
+                return S_OK;
             }
+            return res;
         }
 
         public void Pause()
         {
-            if (mediaControl != null)
+            if (State != PlayerState.Paused && mediaControl != null)
             {
                 mediaControl.Pause();
                 _state = PlayerState.Paused;
+            }
+        }
+
+        public void Stop()
+        {
+            if (State != PlayerState.Stopped && mediaControl != null)
+            {
+                mediaControl.Stop();
+                _state = PlayerState.Stopped;
             }
         }
 
