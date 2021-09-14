@@ -34,6 +34,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.seekBar = new System.Windows.Forms.Panel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.volumeBar = new System.Windows.Forms.Panel();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miPlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnSettings = new System.Windows.Forms.Panel();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelVideoOutput
@@ -54,7 +60,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             | System.Windows.Forms.AnchorStyles.Right)));
             this.seekBar.Location = new System.Drawing.Point(106, 170);
             this.seekBar.Name = "seekBar";
-            this.seekBar.Size = new System.Drawing.Size(236, 20);
+            this.seekBar.Size = new System.Drawing.Size(213, 20);
             this.seekBar.TabIndex = 1;
             this.seekBar.Paint += new System.Windows.Forms.PaintEventHandler(this.seekBar_Paint);
             this.seekBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.seekBar_MouseDown);
@@ -76,11 +82,53 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.volumeBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.volumeBar_MouseDown);
             this.volumeBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.volumeBar_MouseDown);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPlayToolStripMenuItem,
+            this.miPauseToolStripMenuItem,
+            this.miStopToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(107, 70);
+            // 
+            // miPlayToolStripMenuItem
+            // 
+            this.miPlayToolStripMenuItem.Name = "miPlayToolStripMenuItem";
+            this.miPlayToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miPlayToolStripMenuItem.Text = "Плей";
+            this.miPlayToolStripMenuItem.Click += new System.EventHandler(this.miPlayToolStripMenuItem_Click);
+            // 
+            // miPauseToolStripMenuItem
+            // 
+            this.miPauseToolStripMenuItem.Name = "miPauseToolStripMenuItem";
+            this.miPauseToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miPauseToolStripMenuItem.Text = "Пауза";
+            this.miPauseToolStripMenuItem.Click += new System.EventHandler(this.miPauseToolStripMenuItem_Click);
+            // 
+            // miStopToolStripMenuItem
+            // 
+            this.miStopToolStripMenuItem.Name = "miStopToolStripMenuItem";
+            this.miStopToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miStopToolStripMenuItem.Text = "Стоп";
+            this.miStopToolStripMenuItem.Click += new System.EventHandler(this.miStopToolStripMenuItem_Click);
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSettings.BackgroundImage = global::Minimal_video_player_DirectShow_C_Sharp.Properties.Resources.tools;
+            this.btnSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSettings.Location = new System.Drawing.Point(322, 170);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(20, 20);
+            this.btnSettings.TabIndex = 4;
+            this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(342, 188);
+            this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.volumeBar);
             this.Controls.Add(this.seekBar);
             this.Controls.Add(this.panelVideoOutput);
@@ -92,6 +140,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.Resize += new System.EventHandler(this.Form1_Resize);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -102,6 +151,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private System.Windows.Forms.Panel seekBar;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Panel volumeBar;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miPlayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miPauseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miStopToolStripMenuItem;
+        private System.Windows.Forms.Panel btnSettings;
     }
 }
 

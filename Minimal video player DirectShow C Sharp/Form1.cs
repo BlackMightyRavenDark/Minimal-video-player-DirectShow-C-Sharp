@@ -191,6 +191,14 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        private void btnSettings_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                contextMenuStrip1.Show(Cursor.Position);
+            }
+        }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
             seekBar.Refresh();
@@ -210,20 +218,38 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }    
         }
 
+        private void miPlayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            player.Play();
+        }
+
+        private void miPauseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            player.Pause();
+        }
+
+        private void miStopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            player.Clear();
+            panelVideoOutput.Refresh();
+            volumeBar.Refresh();
+            seekBar.Refresh();
+        }
+
         private void ShowError(int errorCode)
         {
             switch (errorCode)
             {
                 case ERROR_FILE_NAME_NOT_DEFINED:
-                    MessageBox.Show("Не указано имя файла!", "Ошибка!", 
+                    MessageBox.Show("Не указано имя файла!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case ERROR_FILE_NOT_FOUND:
-                    MessageBox.Show($"Файл не найден!\n{player.FileName}", "Ошибка!", 
+                    MessageBox.Show($"Файл не найден!\n{player.FileName}", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 case ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED:
-                    MessageBox.Show("Не указано окно для вывода видео!", "Ошибка!", 
+                    MessageBox.Show("Не указано окно для вывода видео!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
                 default:
