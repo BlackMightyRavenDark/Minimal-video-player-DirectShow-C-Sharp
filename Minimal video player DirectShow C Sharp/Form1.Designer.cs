@@ -39,6 +39,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miStopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSettings = new System.Windows.Forms.Panel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -121,6 +122,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(20, 20);
             this.btnSettings.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.btnSettings, "Меню");
             this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
             // 
             // Form1
@@ -156,6 +158,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private System.Windows.Forms.ToolStripMenuItem miPauseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miStopToolStripMenuItem;
         private System.Windows.Forms.Panel btnSettings;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
