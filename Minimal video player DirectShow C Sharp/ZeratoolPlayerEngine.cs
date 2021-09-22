@@ -30,6 +30,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
         public const int ERROR_NOTHING_RENDERED = -103;
 
+        public enum DirectShowGraphMode { Automatic, Manual }
         public enum PlayerState { Playing, Paused, Stopped, Null }
 
         private int _videoWidth;
@@ -102,6 +103,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         }
 
         public PlayerState State => _state;
+        public DirectShowGraphMode GraphMode { get; set; } = DirectShowGraphMode.Manual;
         public bool AudioRendered => basicAudio != null;
         public bool VideoRendered => basicVideo != null;
         
@@ -121,6 +123,59 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 return ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED;
             }
 
+            switch (GraphMode)
+            {
+                case DirectShowGraphMode.Automatic:
+                    int errorCode = CreateComObject<FilterGraph, IGraphBuilder>(out graphBuilder);
+                    if (errorCode != S_OK)
+                    {
+                        return errorCode;
+                    }
+
+                    errorCode = graphBuilder.RenderFile(FileName, null);
+                    if (errorCode == S_OK)
+                    {
+                        if (GetVideoInterfaces())
+                        {
+                            videoWindow.put_Owner(VideoOutputWindow.Handle);
+                            videoWindow.put_MessageDrain(VideoOutputWindow.Handle);
+                            videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipChildren | WindowStyle.ClipSiblings);
+
+                            Rectangle videoRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+                            videoRect = videoRect.ResizeTo(VideoOutputWindow.ClientSize).CenterIn(VideoOutputWindow.ClientRectangle);
+                            SetVideoOutputRectangle(videoRect);
+                            videoWindow.put_Visible(OABool.True);
+                        }
+                        else
+                        {
+                            Clear();
+                            return S_FALSE;
+                        }
+
+                        if (GetComInterface<IBasicAudio>(graphBuilder, out basicAudio))
+                        {
+                            basicAudio.put_Volume(GetDecibelsVolume(Volume));
+                        }
+                        mediaPosition = (IMediaPosition)graphBuilder;
+                        mediaControl = (IMediaControl)graphBuilder;
+
+                        _state = PlayerState.Stopped;
+                    }
+                    else
+                    {
+                        Clear();
+                    }
+                    return errorCode;
+
+                case DirectShowGraphMode.Manual:
+                    return BuildGraph_Manual();
+            }
+
+            return S_FALSE;
+        }
+
+        private int BuildGraph_Manual()
+        {
             CreateComObject<FilterGraph, IGraphBuilder>(out graphBuilder);
             CreateDirectShowFilter(CLSID_FileSourceAsync, out fileSourceFilter);
             graphBuilder.AddFilter(fileSourceFilter, "Source filter");

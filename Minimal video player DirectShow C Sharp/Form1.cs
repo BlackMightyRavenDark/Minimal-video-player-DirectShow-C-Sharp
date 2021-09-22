@@ -30,6 +30,19 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 ShowErrorMessage(errorCode);
             }
 
+            switch (player.GraphMode)
+            {
+                case DirectShowGraphMode.Automatic:
+                    miAutomaticToolStripMenuItem.Checked = true;
+                    miManualToolStripMenuItem.Checked = false;
+                    break;
+
+                case DirectShowGraphMode.Manual:
+                    miAutomaticToolStripMenuItem.Checked = false;
+                    miManualToolStripMenuItem.Checked = true;
+                    break;
+            }
+
             volumeBar.SetDoubleBuffering(true);
             seekBar.SetDoubleBuffering(true);
         }
@@ -223,6 +236,45 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }    
         }
 
+        private void ChangeGraphMode(DirectShowGraphMode graphMode)
+        {
+            timer1.Enabled = false;
+            double pos = player.Position;
+            player.Clear();
+            panelVideoOutput.Refresh();
+            volumeBar.Refresh();
+            seekBar.Refresh();
+            player.GraphMode = graphMode;
+            int errorCode = player.Play();
+            if (errorCode == S_OK)
+            {
+                if (pos > 0.0)
+                {
+                    player.Position = pos;
+                }
+                volumeBar.Refresh();
+                seekBar.Refresh();
+                timer1.Enabled = true;
+            }
+            else
+            {
+                ShowErrorMessage(errorCode);
+            }
+
+            switch (player.GraphMode)
+            {
+                case DirectShowGraphMode.Automatic:
+                    miAutomaticToolStripMenuItem.Checked = true;
+                    miManualToolStripMenuItem.Checked = false;
+                    break;
+
+                case DirectShowGraphMode.Manual:
+                    miAutomaticToolStripMenuItem.Checked = false;
+                    miManualToolStripMenuItem.Checked = true;
+                    break;
+            }
+        }
+
         private void miPlayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int errorCode = player.Play();
@@ -243,6 +295,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             panelVideoOutput.Refresh();
             volumeBar.Refresh();
             seekBar.Refresh();
+        }
+
+        private void miAutomaticToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangeGraphMode(DirectShowGraphMode.Automatic);
+        }
+
+        private void miManualToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangeGraphMode(DirectShowGraphMode.Manual);
         }
 
         private void ShowErrorMessage(int errorCode)
@@ -269,10 +331,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
 
+                case VFW_S_PARTIAL_RENDER:
+                    MessageBox.Show($"Не удалось отрендерить файл!\n{player.FileName}\nОшибка VFW_S_PARTIAL_RENDER", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+
                 default:
                     MessageBox.Show(errorCode.ToString(), "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
         }
+
     }
 }

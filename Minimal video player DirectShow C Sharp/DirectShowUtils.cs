@@ -9,6 +9,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int S_OK = 0;
         public const int S_FALSE = 1;
         public const int E_POINTER = -2147467261; //0x80004003
+        public const int VFW_S_PARTIAL_RENDER = 262722; //0x00040242
 
         public static readonly Guid CLSID_FileSourceAsync = new Guid("{E436EBB5-524F-11CE-9F53-0020AF0BA770}");
         public static readonly Guid CLSID_LAV_Splitter = new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}");

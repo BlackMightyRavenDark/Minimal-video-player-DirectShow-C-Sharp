@@ -40,6 +40,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miStopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSettings = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.miGraphModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAutomaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -88,28 +92,30 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPlayToolStripMenuItem,
             this.miPauseToolStripMenuItem,
-            this.miStopToolStripMenuItem});
+            this.miStopToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.miGraphModeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(107, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
             // 
             // miPlayToolStripMenuItem
             // 
             this.miPlayToolStripMenuItem.Name = "miPlayToolStripMenuItem";
-            this.miPlayToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miPlayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.miPlayToolStripMenuItem.Text = "Плей";
             this.miPlayToolStripMenuItem.Click += new System.EventHandler(this.miPlayToolStripMenuItem_Click);
             // 
             // miPauseToolStripMenuItem
             // 
             this.miPauseToolStripMenuItem.Name = "miPauseToolStripMenuItem";
-            this.miPauseToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miPauseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.miPauseToolStripMenuItem.Text = "Пауза";
             this.miPauseToolStripMenuItem.Click += new System.EventHandler(this.miPauseToolStripMenuItem_Click);
             // 
             // miStopToolStripMenuItem
             // 
             this.miStopToolStripMenuItem.Name = "miStopToolStripMenuItem";
-            this.miStopToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.miStopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.miStopToolStripMenuItem.Text = "Стоп";
             this.miStopToolStripMenuItem.Click += new System.EventHandler(this.miStopToolStripMenuItem_Click);
             // 
@@ -124,6 +130,34 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.btnSettings.TabIndex = 4;
             this.toolTip1.SetToolTip(this.btnSettings, "Меню");
             this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
+            // 
+            // miGraphModeToolStripMenuItem
+            // 
+            this.miGraphModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAutomaticToolStripMenuItem,
+            this.miManualToolStripMenuItem});
+            this.miGraphModeToolStripMenuItem.Name = "miGraphModeToolStripMenuItem";
+            this.miGraphModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.miGraphModeToolStripMenuItem.Text = "Режим";
+            // 
+            // miAutomaticToolStripMenuItem
+            // 
+            this.miAutomaticToolStripMenuItem.Name = "miAutomaticToolStripMenuItem";
+            this.miAutomaticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.miAutomaticToolStripMenuItem.Text = "Автоматический";
+            this.miAutomaticToolStripMenuItem.Click += new System.EventHandler(this.miAutomaticToolStripMenuItem_Click);
+            // 
+            // miManualToolStripMenuItem
+            // 
+            this.miManualToolStripMenuItem.Name = "miManualToolStripMenuItem";
+            this.miManualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.miManualToolStripMenuItem.Text = "Ручной";
+            this.miManualToolStripMenuItem.Click += new System.EventHandler(this.miManualToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
             // 
             // Form1
             // 
@@ -159,6 +193,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private System.Windows.Forms.ToolStripMenuItem miStopToolStripMenuItem;
         private System.Windows.Forms.Panel btnSettings;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolStripMenuItem miGraphModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miAutomaticToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miManualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 
