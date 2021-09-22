@@ -49,6 +49,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             // 
             // panelVideoOutput
             // 
+            this.panelVideoOutput.AllowDrop = true;
             this.panelVideoOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -57,6 +58,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.panelVideoOutput.Name = "panelVideoOutput";
             this.panelVideoOutput.Size = new System.Drawing.Size(342, 170);
             this.panelVideoOutput.TabIndex = 0;
+            this.panelVideoOutput.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelVideoOutput_DragDrop);
+            this.panelVideoOutput.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelVideoOutput_DragEnter);
             this.panelVideoOutput.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelVideoOutput_MouseDown);
             // 
             // seekBar
@@ -96,7 +99,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.toolStripMenuItem1,
             this.miGraphModeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(113, 98);
             // 
             // miPlayToolStripMenuItem
             // 

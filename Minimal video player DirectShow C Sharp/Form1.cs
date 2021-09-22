@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using static Minimal_video_player_DirectShow_C_Sharp.ZeratoolPlayerEngine;
@@ -19,16 +20,6 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         {
             player = new ZeratoolPlayerEngine();
             player.VideoOutputWindow = panelVideoOutput;
-            player.FileName = @"H:\Downloads\completed\Doctor.Who.s11.720p.WEBRip.BaibaKo\Doctor.Who.s11e00.720p.WEBRip.BaibaKo.mkv";
-            int errorCode = player.Play();
-            if (errorCode == S_OK)
-            {
-                timer1.Enabled = true;
-            }
-            else
-            {
-                ShowErrorMessage(errorCode);
-            }
 
             switch (player.GraphMode)
             {
@@ -209,6 +200,38 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        private void panelVideoOutput_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void panelVideoOutput_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                player.Clear();
+                panelVideoOutput.Refresh();
+                volumeBar.Refresh();
+                seekBar.Refresh();
+
+                string[] strings = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (File.Exists(strings[0]))
+                {
+                    player.FileName = strings[0];
+                    int errorCode = player.Play();
+                    if (errorCode == S_OK)
+                    {
+                        volumeBar.Refresh();
+                        seekBar.Refresh();
+                    }
+                    else
+                    {
+                        ShowErrorMessage(errorCode);
+                    }
+                }
+            }
+        }
+
         private void btnSettings_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -341,6 +364,5 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     break;
             }
         }
-
     }
 }
