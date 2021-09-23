@@ -9,6 +9,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 {
     public partial class Form1 : Form
     {
+        public const string TITLE = "Minimal video player DirectShow";
         private ZeratoolPlayerEngine player;
 
         public Form1()
@@ -219,6 +220,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 if (File.Exists(strings[0]))
                 {
                     player.FileName = strings[0];
+                    Text = $"{Path.GetFileName(player.FileName)} | {TITLE}";
                     int errorCode = player.Play();
                     if (errorCode == S_OK)
                     {
