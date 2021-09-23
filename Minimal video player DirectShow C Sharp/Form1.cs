@@ -70,7 +70,6 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
             if (player != null && player.Duration > 0.0)
             {
-
                 int x = (int)(seekBar.Width / player.Duration * player.Position);
                 Rectangle r = new Rectangle(0, 0, x, seekBar.Height);
                 e.Graphics.FillRectangle(Brushes.Blue, r);
@@ -168,27 +167,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     return;
 
                 case Keys.R:
-                    timer1.Enabled = false;
-                    double pos = player.Position;
-                    player.Clear();
-                    panelVideoOutput.Refresh();
-                    volumeBar.Refresh();
-                    seekBar.Refresh();
-                    int errorCode = player.Play();
-                    if (errorCode == S_OK)
-                    {
-                        if (pos > 0.0)
-                        {
-                            player.Position = pos;
-                        }
-                        volumeBar.Refresh();
-                        seekBar.Refresh();
-                        timer1.Enabled = true;
-                    }
-                    else
-                    {
-                        ShowErrorMessage(errorCode);
-                    }
+                    PlayerRebuildGraph();
                     break;
             }
         }
@@ -197,7 +176,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         {
             if (e.Button == MouseButtons.Left && player != null)
             {
-                PlayerPlayPause(player);
+                PlayerTogglePause();
             }
         }
 
@@ -210,28 +189,10 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                timer1.Enabled = false;
-                player.Clear();
-                panelVideoOutput.Refresh();
-                volumeBar.Refresh();
-                seekBar.Refresh();
-
                 string[] strings = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (File.Exists(strings[0]))
                 {
-                    player.FileName = strings[0];
-                    Text = $"{Path.GetFileName(player.FileName)} | {TITLE}";
-                    int errorCode = player.Play();
-                    if (errorCode == S_OK)
-                    {
-                        volumeBar.Refresh();
-                        seekBar.Refresh();
-                        timer1.Enabled = true;
-                    }
-                    else
-                    {
-                        ShowErrorMessage(errorCode);
-                    }
+                    PlayerPlayFile(strings[0]);
                 }
             }
         }
@@ -249,16 +210,63 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             seekBar.Refresh();
         }
 
-        private void PlayerPlayPause(ZeratoolPlayerEngine playerEngine)
+        private void PlayerPlayFile(string fileName)
         {
-            switch (playerEngine.State)
+            timer1.Enabled = false;
+            player.Clear();
+            panelVideoOutput.Refresh();
+            volumeBar.Refresh();
+            seekBar.Refresh();
+            player.FileName = fileName;
+            Text = $"{Path.GetFileName(fileName)} | {TITLE}";
+            int errorCode = player.Play();
+            if (errorCode == S_OK)
+            {
+                volumeBar.Refresh();
+                seekBar.Refresh();
+                timer1.Enabled = true;
+            }
+            else
+            {
+                ShowErrorMessage(errorCode);
+            }
+        }
+
+        private void PlayerRebuildGraph()
+        {
+            timer1.Enabled = false;
+            double pos = player.Position;
+            player.Clear();
+            panelVideoOutput.Refresh();
+            volumeBar.Refresh();
+            seekBar.Refresh();
+            int errorCode = player.Play();
+            if (errorCode == S_OK)
+            {
+                if (pos > 0.0)
+                {
+                    player.Position = pos;
+                }
+                volumeBar.Refresh();
+                seekBar.Refresh();
+                timer1.Enabled = true;
+            }
+            else
+            {
+                ShowErrorMessage(errorCode);
+            }
+        }
+
+        private void PlayerTogglePause()
+        {
+            switch (player.State)
             {
                 case PlayerState.Paused:
-                    playerEngine.Play();
+                    player.Play();
                     break;
 
                 case PlayerState.Playing:
-                    playerEngine.Pause();
+                    player.Pause();
                     break;
             }    
         }
