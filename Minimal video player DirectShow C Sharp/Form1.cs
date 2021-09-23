@@ -307,6 +307,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 ShowErrorMessage(errorCode);
             }
+            volumeBar.Refresh();
+            seekBar.Refresh();
         }
 
         private void miPauseToolStripMenuItem_Click(object sender, EventArgs e)
