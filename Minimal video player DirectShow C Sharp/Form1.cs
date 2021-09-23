@@ -209,6 +209,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
+                timer1.Enabled = false;
                 player.Clear();
                 panelVideoOutput.Refresh();
                 volumeBar.Refresh();
@@ -223,6 +224,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     {
                         volumeBar.Refresh();
                         seekBar.Refresh();
+                        timer1.Enabled = true;
                     }
                     else
                     {
