@@ -9,7 +9,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 {
     public partial class Form1 : Form
     {
-        public const string TITLE = "Minimal video player DirectShow";
+        public const string TITLE = "Minimal video player DirectShow | Version 1.0.0";
         private ZeratoolPlayerEngine player;
 
         public Form1()
@@ -19,6 +19,8 @@ namespace Minimal_video_player_DirectShow_C_Sharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Text = TITLE;
+
             player = new ZeratoolPlayerEngine();
             player.VideoOutputWindow = panelVideoOutput;
 

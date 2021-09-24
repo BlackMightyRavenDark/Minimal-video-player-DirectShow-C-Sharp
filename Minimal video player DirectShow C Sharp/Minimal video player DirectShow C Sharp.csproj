@@ -7,7 +7,7 @@
     <ProjectGuid>{A9C273AD-6F11-4E65-B6E8-3557D89C16E0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Minimal_video_player_DirectShow_C_Sharp</RootNamespace>
-    <AssemblyName>Minimal video player DirectShow C Sharp</AssemblyName>
+    <AssemblyName>mvp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
