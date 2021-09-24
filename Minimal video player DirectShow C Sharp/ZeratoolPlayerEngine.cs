@@ -154,12 +154,19 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                             return S_FALSE;
                         }
 
+                        if (!GetComInterface<IMediaControl>(graphBuilder, out mediaControl))
+                        {
+                            Clear();
+                            return E_POINTER;
+                        }
+
                         if (GetComInterface<IBasicAudio>(graphBuilder, out basicAudio))
                         {
-                            basicAudio.put_Volume(GetDecibelsVolume(Volume));
+                            int db = GetDecibelsVolume(Volume);
+                            basicAudio.put_Volume(db);
                         }
+
                         mediaPosition = (IMediaPosition)graphBuilder;
-                        mediaControl = (IMediaControl)graphBuilder;
 
                         _state = PlayerState.Stopped;
                     }
