@@ -26,11 +26,19 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 case DirectShowGraphMode.Automatic:
                     miAutomaticToolStripMenuItem.Checked = true;
+                    miIntellectualToolStripMenuItem.Checked = false;
+                    miManualToolStripMenuItem.Checked = false;
+                    break;
+
+                case DirectShowGraphMode.Intellectual:
+                    miAutomaticToolStripMenuItem.Checked = false;
+                    miIntellectualToolStripMenuItem.Checked = true;
                     miManualToolStripMenuItem.Checked = false;
                     break;
 
                 case DirectShowGraphMode.Manual:
                     miAutomaticToolStripMenuItem.Checked = false;
+                    miIntellectualToolStripMenuItem.Checked = false;
                     miManualToolStripMenuItem.Checked = true;
                     break;
             }
@@ -324,11 +332,19 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 case DirectShowGraphMode.Automatic:
                     miAutomaticToolStripMenuItem.Checked = true;
+                    miIntellectualToolStripMenuItem.Checked = false;
+                    miManualToolStripMenuItem.Checked = false;
+                    break;
+
+                case DirectShowGraphMode.Intellectual:
+                    miAutomaticToolStripMenuItem.Checked = false;
+                    miIntellectualToolStripMenuItem.Checked = true;
                     miManualToolStripMenuItem.Checked = false;
                     break;
 
                 case DirectShowGraphMode.Manual:
                     miAutomaticToolStripMenuItem.Checked = false;
+                    miIntellectualToolStripMenuItem.Checked = false;
                     miManualToolStripMenuItem.Checked = true;
                     break;
             }
@@ -361,6 +377,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private void miAutomaticToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ChangeGraphMode(DirectShowGraphMode.Automatic);
+        }
+
+        private void miIntellectualToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangeGraphMode(DirectShowGraphMode.Intellectual);
         }
 
         private void miManualToolStripMenuItem_Click(object sender, EventArgs e)

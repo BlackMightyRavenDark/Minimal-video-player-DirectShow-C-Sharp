@@ -38,12 +38,13 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miPlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miPauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miStopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnSettings = new System.Windows.Forms.Panel();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.miGraphModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAutomaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnSettings = new System.Windows.Forms.Panel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.miIntellectualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,7 +100,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.toolStripMenuItem1,
             this.miGraphModeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(113, 98);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
             // 
             // miPlayToolStripMenuItem
             // 
@@ -122,22 +123,16 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miStopToolStripMenuItem.Text = "Стоп";
             this.miStopToolStripMenuItem.Click += new System.EventHandler(this.miStopToolStripMenuItem_Click);
             // 
-            // btnSettings
+            // toolStripMenuItem1
             // 
-            this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSettings.BackgroundImage = global::Minimal_video_player_DirectShow_C_Sharp.Properties.Resources.tools;
-            this.btnSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnSettings.Location = new System.Drawing.Point(322, 170);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(20, 20);
-            this.btnSettings.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.btnSettings, "Меню");
-            this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
             // 
             // miGraphModeToolStripMenuItem
             // 
             this.miGraphModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miAutomaticToolStripMenuItem,
+            this.miIntellectualToolStripMenuItem,
             this.miManualToolStripMenuItem});
             this.miGraphModeToolStripMenuItem.Name = "miGraphModeToolStripMenuItem";
             this.miGraphModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
@@ -150,6 +145,13 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miAutomaticToolStripMenuItem.Text = "Автоматический";
             this.miAutomaticToolStripMenuItem.Click += new System.EventHandler(this.miAutomaticToolStripMenuItem_Click);
             // 
+            // miIntellectualToolStripMenuItem
+            // 
+            this.miIntellectualToolStripMenuItem.Name = "miIntellectualToolStripMenuItem";
+            this.miIntellectualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.miIntellectualToolStripMenuItem.Text = "Интеллектуальный";
+            this.miIntellectualToolStripMenuItem.Click += new System.EventHandler(this.miIntellectualToolStripMenuItem_Click);
+            // 
             // miManualToolStripMenuItem
             // 
             this.miManualToolStripMenuItem.Name = "miManualToolStripMenuItem";
@@ -157,10 +159,17 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             this.miManualToolStripMenuItem.Text = "Ручной";
             this.miManualToolStripMenuItem.Click += new System.EventHandler(this.miManualToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem1
+            // btnSettings
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.btnSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSettings.BackgroundImage = global::Minimal_video_player_DirectShow_C_Sharp.Properties.Resources.tools;
+            this.btnSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSettings.Location = new System.Drawing.Point(322, 170);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(20, 20);
+            this.btnSettings.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.btnSettings, "Меню");
+            this.btnSettings.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnSettings_MouseDown);
             // 
             // Form1
             // 
@@ -200,6 +209,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         private System.Windows.Forms.ToolStripMenuItem miAutomaticToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miManualToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem miIntellectualToolStripMenuItem;
     }
 }
 

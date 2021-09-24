@@ -11,6 +11,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
     public class ZeratoolPlayerEngine
     {
         private IGraphBuilder graphBuilder = null;
+        private ICaptureGraphBuilder2 captureGraphBuilder2 = null;
         private IVideoWindow videoWindow = null;
         private IBasicVideo basicVideo = null;
         private IBasicAudio basicAudio = null;
@@ -30,7 +31,7 @@ namespace Minimal_video_player_DirectShow_C_Sharp
         public const int ERROR_VIDEO_OUTPUT_WINDOW_NOT_DEFINED = -102;
         public const int ERROR_NOTHING_RENDERED = -103;
 
-        public enum DirectShowGraphMode { Automatic, Manual }
+        public enum DirectShowGraphMode { Automatic, Intellectual, Manual }
         public enum PlayerState { Playing, Paused, Stopped, Null }
 
         private int _videoWidth;
@@ -167,6 +168,9 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                         Clear();
                     }
                     return errorCode;
+
+                case DirectShowGraphMode.Intellectual:
+                    return BuildGraph_Intellectual();
 
                 case DirectShowGraphMode.Manual:
                     return BuildGraph_Manual();
@@ -373,6 +377,120 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             return errorCode;
         }
 
+        private int BuildGraph_Intellectual()
+        {
+            int errorCode = CreateComObject<FilterGraph, IGraphBuilder>(out graphBuilder);
+            if (errorCode != S_OK)
+            {
+                Clear();
+                return errorCode;
+            }
+
+            errorCode = CreateComObject<CaptureGraphBuilder2, ICaptureGraphBuilder2>(out captureGraphBuilder2);
+            if (errorCode != S_OK)
+            {
+                Clear();
+                return errorCode;
+            }
+
+            errorCode = captureGraphBuilder2.SetFiltergraph(graphBuilder);
+            if (errorCode != S_OK)
+            {
+                Clear();
+                return errorCode;
+            }
+            graphBuilder.AddSourceFilter(FileName, "Source filter", out fileSourceFilter);
+
+            //render video chain.
+            errorCode = RenderVideoStream_Intellectual();
+            if (errorCode != S_OK || !GetVideoInterfaces() || !ConfigureVideoOutput())
+            {
+                ClearVideoChain();
+            }
+
+            //render audio chain.
+            errorCode = RenderAudioStream_Intellectual();
+            if (errorCode == S_OK && GetComInterface<IBasicAudio>(graphBuilder, out basicAudio))
+            {
+                basicAudio.put_Volume(GetDecibelsVolume(Volume));
+            }
+            else
+            {
+                ClearAudioChain();
+            }
+
+            if (!VideoRendered && !AudioRendered)
+            {
+                Clear();
+                return S_FALSE;
+            }
+
+            if (!GetComInterface<IMediaControl>(graphBuilder, out mediaControl))
+            {
+                Clear();
+                return E_POINTER;
+            }
+
+            mediaPosition = (IMediaPosition)graphBuilder;
+
+            _state = PlayerState.Stopped;
+
+            return errorCode;
+        }
+
+        private int RenderVideoStream_Intellectual()
+        {
+            int errorCode = CreateDirectShowFilter(CLSID_LAV_VideoDecoder, out videoDecoder);
+            if (errorCode != S_OK)
+            {
+                return errorCode;
+            }
+            graphBuilder.AddFilter(videoDecoder, "Video decoder");
+
+            errorCode = CreateDirectShowFilter(CLSID_VideoMixingRenderer9, out videoRenderer);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoDecoder);
+                return errorCode;
+            }
+            graphBuilder.AddFilter(videoRenderer, "Video renderer");
+
+            errorCode = captureGraphBuilder2.RenderStream(null, MediaType.Video, fileSourceFilter, videoDecoder, videoRenderer);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(videoDecoder);
+                graphBuilder.RemoveFilter(videoRenderer);
+            }
+            return errorCode;
+        }
+
+        private int RenderAudioStream_Intellectual()
+        {
+            int errorCode = CreateDirectShowFilter(CLSID_LAV_AudioDecoder, out audioDecoder);
+            if (errorCode != S_OK)
+            {
+                return errorCode;
+            }
+            graphBuilder.AddFilter(audioDecoder, "Audio decoder");
+
+            errorCode = CreateDirectShowFilter(CLSID_DirectSoundAudioRenderer, out audioRenderer);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioDecoder);
+                return errorCode;
+            }
+            graphBuilder.AddFilter(audioRenderer, "Audio renderer");
+
+            errorCode = captureGraphBuilder2.RenderStream(null, MediaType.Audio, fileSourceFilter, audioDecoder, audioRenderer);
+            if (errorCode != S_OK)
+            {
+                graphBuilder.RemoveFilter(audioDecoder);
+                graphBuilder.RemoveFilter(audioRenderer);
+            }
+
+            return errorCode;
+        }
+
         public int Play()
         {
             int res = S_OK;
@@ -538,6 +656,12 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 Marshal.ReleaseComObject(fileSourceFilter);
                 fileSourceFilter = null;
+            }
+
+            if (captureGraphBuilder2 != null)
+            {
+                Marshal.ReleaseComObject(captureGraphBuilder2);
+                captureGraphBuilder2 = null;
             }
 
             if (graphBuilder != null)
