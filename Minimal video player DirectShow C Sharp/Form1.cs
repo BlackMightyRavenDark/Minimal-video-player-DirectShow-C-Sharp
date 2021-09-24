@@ -166,6 +166,30 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                     Close();
                     return;
 
+                case Keys.Up:
+                    player.Volume += 5;
+                    volumeBar.Refresh();
+                    break;
+
+                case Keys.Down:
+                    player.Volume -= 5;
+                    volumeBar.Refresh();
+                    break;
+
+                case Keys.Left:
+                    player.Seek(-3.0);
+                    seekBar.Refresh();
+                    break;
+
+                case Keys.Right:
+                    player.Seek(3.0);
+                    seekBar.Refresh();
+                    break;
+
+                case Keys.Space:
+                    PlayerTogglePause();
+                    break;
+
                 case Keys.R:
                     PlayerRebuildGraph();
                     break;

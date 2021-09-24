@@ -56,6 +56,18 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             {
                 if (mediaPosition != null)
                 {
+                    if (value < 0.0)
+                    {
+                        value = 0.0;
+                    }
+                    else
+                    {
+                        double dur = Duration;
+                        if (value > dur)
+                        {
+                            value = dur;
+                        }
+                    }
                     mediaPosition.put_CurrentPosition(value);
                 }
             }
@@ -417,6 +429,11 @@ namespace Minimal_video_player_DirectShow_C_Sharp
             }
         }
 
+        public void Seek(double seconds)
+        {
+            Position += seconds;
+        }
+
         private bool GetVideoInterfaces()
         {
             if (!GetComInterface<IVideoWindow>(graphBuilder, out videoWindow) ||
@@ -497,7 +514,6 @@ namespace Minimal_video_player_DirectShow_C_Sharp
                 Marshal.ReleaseComObject(mediaPosition);
                 mediaPosition = null;
             }
-
 
             ClearVideoChain();
             ClearAudioChain();
